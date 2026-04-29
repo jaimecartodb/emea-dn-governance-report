@@ -1,0 +1,6 @@
+# Landing page repo only
+*.pyc
+__pycache__/
+.DS_Store
+.env
+
