@@ -80,6 +80,64 @@ The 22 MCP tools combined cover the full DN reporting and pipeline-management lo
 
 ---
 
+## 🧮 The complex ACR / PBO questions MSXCP can now answer
+
+The 35 live Account-scoped MSXi measures unlock multi-step analytical questions that previously required hand-built Power BI reports or one-off DAX queries. Real examples MSXCP handles end-to-end:
+
+### FY-pinned roll-ups (the fiscal-accuracy problem most tools miss)
+- *"For each EMEA DN territory, give me FY26 PBO, FY26 Target, VTT, and coverage % — pinned to FY26 only, no multi-FY drift."*
+- *"Show me the same view for **CY26** instead of FY26."* → DAX time-filter swap, no schema change
+- *"Across all 6 territories, which accounts have FY26 PBO &gt; $20M but VTT &lt; 0?"* → high-stakes accounts that are still under target
+
+### Pipeline-needed analysis
+- *"For territory ES, show me Addt'l Qualified Pipeline Needed to Target, broken down by account, ranked by gap size."*
+- *"Which accounts have Coverage to Forecast NNR &lt; 1.0× and Coverage to Target NNR &lt; 0.7×?"* → double-deficit accounts
+- *"What's the Qualified Pipeline Needed to Forecast vs Target across NL — is the delta meaningful?"*
+- *"Give me the full Pipeline-to-Target waterfall: PBO + Pipeline Needed = Target, account by account."*
+
+### ACR baselines (the 5-variant comparison)
+- *"Compare Account Azure Usage Baseline (regular) vs Recalibrated vs ACO Adjusted vs Total Adjusted for &lt;account&gt; — where does the ACO adjustment move the needle?"*
+- *"List accounts in territory X where Recent ACR (Last 2 Months) is &gt; 20% below Recalibrated Baseline."* → consumption decline early-warning
+- *"Show me the 10 accounts where Account ACR Baseline diverges most from Account Azure Usage Baseline."* → non-Azure ACR concentration
+
+### Coverage matrix (the 27-cell question)
+- *"Build me the full coverage matrix for &lt;account&gt;: {Baseline, Committed, Qualified} coverage to {Budget, Forecast, Target} including NNR and Azure-specific variants."* → 27 numbers in one call
+- *"Across the leader's portfolio, which accounts have Committed Coverage to Target &gt; 1.0× but Qualified Coverage to Target &lt; 0.7×?"* → committed-but-thin accounts that need pipeline work
+- *"Find accounts where Baseline Coverage to Budget Azure NNR is &lt; 0.5×."* → Azure-specific risk
+
+### Indicator analysis (CPC / QPC)
+- *"For territory NL, list every account currently below CPC to Target Indicator NNR — and tell me the QPC indicator status too."*
+- *"Show me accounts where CPC to Forecast indicator is green but QPC to Target is red."* → forecast confidence without target line-of-sight
+- *"Build me a CPC/QPC heatmap for the leaders rollup."*
+
+### YoY & trajectory
+- *"For each territory, list accounts with PBO YoY % &gt; 30% but FY26 VTT &lt; 0."* → accelerating but still under target
+- *"Which accounts have positive PBO YoY but Recent ACR (Last Month) below baseline?"* → pipeline up, consumption stalling
+- *"Across the EMEA DN portfolio, what's the median PBO YoY % by territory?"*
+
+### NNR & target attainment
+- *"For each territory, what's the Net New Required to Forecast vs Target gap, and which accounts are driving it?"*
+- *"Identify accounts where Forecast NNR is achievable (Coverage &gt; 1.0×) but Target NNR is not (Coverage &lt; 1.0×)."* → forecast-safe, target-at-risk
+- *"Show me the territory-level NNR bridge: starting baseline → committed → qualified → gap-to-target."*
+
+### Cross-territory & leader views
+- *"Run the full FY26 PBO/Target/VTT roll-up for every territory in one report, ranked by VTT %."* → produces the full EMEA DN scorecard in ~10 seconds
+- *"For the leader cohort, show me top 10 accounts by VTT gap (ascending) regardless of which territory they're in."*
+- *"Which territories have negative VTT this FY but positive Recent ACR momentum?"* → recovering territories worth watching
+
+### Anomaly detection & data quality
+- *"Find any account where FY26 Target appears anomalous — e.g., target &lt; $50K but prior-year ACR &gt; $1M."* → catches upstream MSX target-loader bugs (real find: this surfaced a $16K target on an account doing &gt; $2M PBO)
+- *"Detect accounts whose PBO suddenly &gt;3× the prior week's snapshot."* → likely milestone duplication or stage error
+- *"Validate that Σ(Account PBO) ≈ Territory PBO ± rounding for territory X."* → cross-aggregation reconciliation
+
+### Mathematical validation (built into MSXCP's trust layer)
+- *"Verify [Account PBO VTT] = [Account PBO] − [Target ($)] to the cent for &lt;account&gt;."* → MSXCP runs this automatically; mismatches raise a trust receipt warning
+- *"Show me the determinism receipt for this number — what sources, what filters, what freshness?"* → every numeric answer is signed and reproducible
+
+> **Why other tools can't answer most of these:** they either don't enumerate the full 35-measure set, don't apply explicit FY pinning at the DAX layer, or query a single dataset that returns RLS errors for most users. MSXCP solves all three.
+
+---
+
 ## 🗄️ Data sources MSXCP can query
 
 | Source | Surface | What it provides |
