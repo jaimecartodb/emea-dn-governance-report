@@ -305,6 +305,55 @@ After install, run `msxcp --help` or follow the [Quickstart on SharePoint](https
 
 ---
 
+## 🤖 Use MSXCP from inside GitHub Copilot CLI
+
+Once installed, MSXCP becomes a **first-class MCP server inside the GitHub Copilot CLI** — meaning you can drive every report, every CRM update, every territory drill-down with natural-language prompts in your terminal, with no syntax to learn.
+
+**Step 1 — Register MSXCP with Copilot CLI** (one-line):
+
+```bash
+msxcp install copilot-cli
+```
+
+That's it. The command is **idempotent** — re-running is a no-op if MSXCP is already registered. Behind the scenes it:
+
+- Locates your Copilot CLI config at `~/.copilot/mcp.json`
+- Adds the `msxcp` MCP server stanza (preserves any other servers you have)
+- Writes a `.bak` of your existing config first
+- Refuses to clobber a divergent existing entry without `--force`
+
+Other modes:
+
+```bash
+msxcp install copilot-cli --check    # dry-run: print what would be written, don't write
+msxcp install copilot-cli --force    # overwrite an existing 'msxcp' entry
+msxcp install copilot-cli --remove   # uninstall
+msxcp install copilot-cli --path P   # use a non-default mcp.json location
+```
+
+**Step 2 — Restart your Copilot CLI session and just talk to it:**
+
+```text
+> Generate the Europe South governance report
+> What changed in NL since last week?
+> Update <account> milestone forecast to $150K
+> Run msxcp doctor and tell me if anything is wrong
+> Show me top movers in UK2 since the last snapshot
+> What's the FY26 PBO VTT for every EMEA DN territory?
+```
+
+Copilot CLI handles tool routing automatically — you never need to remember which MCP tool name does what. Inside Copilot CLI, you can verify MSXCP loaded with `/mcp list`.
+
+**Three ways to invoke MSXCP, all from the same install:**
+
+| Surface | When to use it |
+|---|---|
+| **Copilot CLI (natural language)** | Day-to-day governance, reporting, ad-hoc questions |
+| **`msxcp` shell command** | Scripting, scheduled jobs, doctor / status checks, snapshots |
+| **Python module** (`python -m msxcp.cli ...`) | Programmatic embedding, CI workflows |
+
+---
+
 ## 🧠 The 22 MCP tools
 
 | Category | Tools | What they do |
